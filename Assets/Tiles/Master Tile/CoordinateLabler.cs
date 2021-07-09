@@ -11,12 +11,14 @@ public class CoordinateLabler : MonoBehaviour
 
     [SerializeField] Color defaultColor = Color.black;
     [SerializeField] Color blockedColor = Color.grey;
-
+    [SerializeField] Color ExoploredColor = Color.yellow;
+    [SerializeField] Color pathColor = new Color(1f, 0.5f, 0f);
+    GridManager gridManager;
 
 
     TextMeshPro label;
     Vector2Int Coordinate = new Vector2Int();
-    WayPoint wayPoint;
+  
 
     
 
@@ -26,11 +28,12 @@ public class CoordinateLabler : MonoBehaviour
 
     void Awake()
     {
+        gridManager = FindObjectOfType<GridManager>();
         label = GetComponent<TextMeshPro>();
         label.enabled = false;
+      
 
-
-        wayPoint = GetComponentInParent<WayPoint>();
+       
         DisplayCoordinate();
     }
   
@@ -53,20 +56,34 @@ public class CoordinateLabler : MonoBehaviour
 
     void SetLabelColor()
     {
-        if(wayPoint.IsPlaceable)
-          {
-            label.color = defaultColor;
-          }
-        else
-          {
+        if (gridManager == null) { return; }
+
+        Node node = gridManager.GetNode(Coordinate);
+
+        if(node == null) { return; }
+
+        if (!node.isWalkable)
+        {
             label.color = blockedColor;
-          }
+        }
+        else if (node.isPath)
+        {
+            label.color = pathColor;
+        }
+        else if (node.isExplored)
+        {
+            label.color = ExoploredColor;
+        }
+        else
+        {
+            label.color = defaultColor;
+        }
     }
     void DisplayCoordinate()
-    {                                                               // We divide the parent position by the translation handle snap to be able to run this code inside the game and not just in the editor
-                                                                    // we will take this out when it's time to build the game due to anything to do with unity editor in code upon build will not build
-        Coordinate.x = Mathf.RoundToInt(transform.parent.position.x / UnityEditor.EditorSnapSettings.move.x);
-        Coordinate.y = Mathf.RoundToInt(transform.parent.position.z / UnityEditor.EditorSnapSettings.move.z);
+    {                                                            
+        if (gridManager == null) { return; }                                                       
+        Coordinate.x = Mathf.RoundToInt(transform.parent.position.x /gridManager.UnityGridSize);
+        Coordinate.y = Mathf.RoundToInt(transform.parent.position.z / gridManager.UnityGridSize);
         label.text = Coordinate.x + " , " + Coordinate.y;
     }
     void updateObjectName()

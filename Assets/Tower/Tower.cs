@@ -5,7 +5,15 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     [SerializeField] int cost = 75;
-    
+    Vector2Int coordinates = new Vector2Int();
+    GridManager gridmanager;
+
+
+    private void Start()
+    {
+        gridmanager = FindObjectOfType<GridManager>();
+    }
+
     public bool CreateTower(Tower tower, Vector3 position)
     {
         Bank bank = FindObjectOfType<Bank>();
@@ -19,12 +27,13 @@ public class Tower : MonoBehaviour
         {
             Instantiate(tower, position, Quaternion.identity);
             bank.Withdraw(cost);
+            coordinates = gridmanager.GetCoordinatesFromPosition(transform.position);
+            gridmanager.BlockNode(coordinates);
         }
        
         return false;
     }
    
- 
 }
 
 
