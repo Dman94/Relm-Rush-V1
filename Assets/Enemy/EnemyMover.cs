@@ -31,9 +31,7 @@ public class EnemyMover : MonoBehaviour
 
     void RecalculatePath()
     {
-        
         path.Clear();
-
         path = pathFinder.GetNewPath();
     }
  
@@ -54,10 +52,10 @@ public class EnemyMover : MonoBehaviour
     {
 
       
-       for(int i = 0; i < path.Count; i++)  // loops through the list of waypoints and executes script for each waypoint in path 1 time
+       for(int i = 0; i < path.Count; i++)  // starting from zero for each element in the count of our path list
         {
-            Vector3 startPosition = transform.position;
-            Vector3 endPosition = gridManager.GetWorldPositionFromCoordinates(path[i].coordinates);
+            Vector3 startPosition = transform.position; 
+            Vector3 endPosition = gridManager.GetWorldPositionFromCoordinates(path[i].coordinates); 
             float travelPercent = 0f;
 
             transform.LookAt(endPosition);

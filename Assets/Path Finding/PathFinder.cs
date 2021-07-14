@@ -7,27 +7,28 @@ public class PathFinder : MonoBehaviour
 
 
     Queue<Node> Frontier = new Queue<Node>();
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
     Dictionary<Vector2Int, Node> reached = new Dictionary<Vector2Int, Node>();
-   
+
+
+    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    GridManager gridManager;
+
+    [SerializeField] Node currentSearchNode;
+    Node StartNode;
+    Node DestinationNode;
 
 
 
     [SerializeField] Vector2Int startCoordinates;
     public Vector2Int StartCoordinates { get { return startCoordinates; } }
 
-    Vector2Int[] Directions = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
-
     [SerializeField] Vector2Int destinationCoordinates;
     public Vector2Int DestinationCoordinates { get { return destinationCoordinates; } }
 
 
-    [SerializeField] Node currentSearchNode;
-    Node StartNode;
-    Node DestinationNode;
-  
 
-    GridManager gridManager;
+    Vector2Int[] Directions = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+
 
 
 
@@ -102,34 +103,33 @@ public class PathFinder : MonoBehaviour
 
     void ExploreNieghbors()
     {
-        List<Node> Nieghbors = new List<Node>();
+        List<Node> Nieghbors = new List<Node>(); //instantiate a new list of reached nodes
 
          
 
-        foreach (Vector2Int direction in Directions)
+        foreach (Vector2Int direction in Directions) //for each direction in the array of Directions
         {
-            Vector2Int neighborCoordinates = currentSearchNode.coordinates + direction;
+            Vector2Int neighborCoordinates = currentSearchNode.coordinates + direction; // intatsaniate the neighbors coordinates to be our current position plus the direction (this will sum up to take a step on our grid)
           
 
-            if (grid.ContainsKey(neighborCoordinates))
+            if (grid.ContainsKey(neighborCoordinates)) // if our grid dictionary contains the neighboring nodes coordinates
             {
-                Nieghbors.Add(grid[neighborCoordinates]);
-               
+                Nieghbors.Add(grid[neighborCoordinates]); // add the node to our list of Neighbors
             }
 
 
         }
 
-        foreach (Node neighbor in Nieghbors)
+        foreach (Node neighbor in Nieghbors) // for every node in our list of Neighbors
         {
           
 
-            if (!reached.ContainsKey(neighbor.coordinates) && neighbor.isWalkable)
+            if (!reached.ContainsKey(neighbor.coordinates) && neighbor.isWalkable) // check our dictionary of reached nodes if it contains the coordinates to the current search node and if it is walkable
             {
-                neighbor.connectedTo = currentSearchNode;
-                reached.Add(neighbor.coordinates, neighbor);
-                Frontier.Enqueue(neighbor);
-
+                neighbor.connectedTo = currentSearchNode; // assign the current neighboring node being explored as the current search node
+                reached.Add(neighbor.coordinates, neighbor); // add the node to our reached lst
+                Frontier.Enqueue(neighbor);  // add this node to our queue
+                 
             }
 
         }
@@ -138,22 +138,22 @@ public class PathFinder : MonoBehaviour
 
     List<Node> BuildPath()
     {
-        List<Node> path = new List<Node>();
-        Node currentNode = DestinationNode;
+        List<Node> path = new List<Node>(); // instantiate a new list of nodes to be our path
+        Node currentNode = DestinationNode; // instantiate the current node to be our destination
 
-        path.Add(currentNode);
-        currentNode.isPath = true; 
+        path.Add(currentNode); // add the destiination to our list of nodes to be our path
+        currentNode.isPath = true; // assign this to be a true statement
 
-        while(currentNode.connectedTo != null)
+        while(currentNode.connectedTo != null) // while the destination has a path to the start
         {
-            currentNode = currentNode.connectedTo;
-            path.Add(currentNode);
-            currentNode.isPath = true;
+            currentNode = currentNode.connectedTo; // take a step from the destination to the starting node
+            path.Add(currentNode);  //  add the current node to our path list
+            currentNode.isPath = true; // assign the added node to be true in our list
         }
 
-        path.Reverse();
+        path.Reverse(); // flip the list since it is built backwards
 
-        return path;
+        return path; // return our built path
     }
 
     public bool WillBlockPath(Vector2Int Coordinates)
@@ -165,7 +165,7 @@ public class PathFinder : MonoBehaviour
 
 
             List<Node> newPath = GetNewPath();
-            grid[Coordinates].isWalkable = previousState;
+            //grid[Coordinates].isWalkable = previousState;
 
             if(newPath.Count <= 1)
             {
@@ -178,9 +178,12 @@ public class PathFinder : MonoBehaviour
         return false;
     }
 
-    public void NotifyReceivers()
-    {
-        BroadcastMessage("RecalculatePath", SendMessageOptions.DontRequireReceiver);
-    }
+   
+        public void NotifyReceivers()
+        {
+            BroadcastMessage("RecalculatePath", SendMessageOptions.DontRequireReceiver);
+        }
+
+
 
 }

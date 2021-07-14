@@ -13,13 +13,14 @@ public class Tile : MonoBehaviour
        GridManager gridManager;
        PathFinder pathFinder;
        Vector2Int Coordinates = new Vector2Int();
-
+       Node thisNode;
 
      void Awake()
     {
         isplaceable = true;
         gridManager = FindObjectOfType<GridManager>();
         pathFinder = FindObjectOfType<PathFinder>();
+       
     }
 
 
@@ -50,15 +51,14 @@ public class Tile : MonoBehaviour
         {
 
                isplaceable = false;
-            
                bool isSuccessfull = towerPrefab.CreateTower(towerPrefab, transform.position);
              
                if (isSuccessfull)
                {
-                 
                    gridManager.BlockNode(Coordinates);
                    pathFinder.NotifyReceivers();
                }
+
         }
     }
  

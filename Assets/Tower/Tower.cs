@@ -27,6 +27,8 @@ public class Tower : MonoBehaviour
         {
             Instantiate(tower, position, Quaternion.identity);
             bank.Withdraw(cost);
+
+
             coordinates = gridmanager.GetCoordinatesFromPosition(transform.position);
             gridmanager.BlockNode(coordinates);
         }
